@@ -1,0 +1,961 @@
+<html><head><base href="https://conversor-universal.com/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CONVERSOR UNIVERSAL</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1c1c1c, #2c2c2c, #3c3c3c);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 20px;
+        max-width: 800px;
+        width: 100%;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #ffa500;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    select {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #ffa500;
+        color: #000;
+    }
+    input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #000;
+    }
+    button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s;
+        margin: 5px;
+        min-width: 100px;
+        height: 40px;
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #convertBtn {
+        background-color: #0000ff;
+        color: #fff;
+    }
+    #infoBtn {
+        background-color: #008000;
+        color: #fff;
+    }
+    #clearBtn {
+        background-color: #ffffff;
+        color: #000;
+    }
+    #exitBtn {
+        background-color: #ff0000;
+        color: #fff;
+    }
+    .result-container {
+        background-color: white;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 15px;
+        min-height: 30px;
+    }
+    #result {
+        color: #000;
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 600px;
+        border-radius: 10px;
+        color: #000;
+    }
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .chat-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 350px;
+        background: rgba(100, 149, 237, 0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        display: none;
+        z-index: 1000;
+        color: white;
+    }
+
+    .chat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+    }
+
+    .chat-header-controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .chat-messages {
+        height: 300px;
+        overflow-y: auto;
+        padding: 10px;
+        word-wrap: break-word;
+    }
+
+    .chat-input-container {
+        padding: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chat-input {
+        width: calc(100% - 60px);
+        padding: 8px;
+        border: none;
+        border-radius: 5px;
+        margin-right: 5px;
+    }
+
+    .chat-send {
+        padding: 8px 15px;
+        background: #90EE90;
+        border: none;
+        border-radius: 5px;
+        color: #000000;
+        cursor: pointer;
+        min-width: 40px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .chat-send:hover {
+        background: #98FB98;
+    }
+
+    .message {
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .bot-message {
+        background: rgba(100, 149, 237, 0.8);
+        margin-right: auto;
+        max-width: 80%;
+        padding: 10px;
+        border-radius: 8px;
+        color: #FFFFFF;
+    }
+
+    .user-message {
+        background: rgba(255, 255, 255, 0.2); 
+        margin-left: auto;
+        max-width: 80%;
+        padding: 10px;
+        border-radius: 8px;
+        color: #FFFFFF;
+    }
+
+    .chat-toggle {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #6495ED;
+        color: #FFFFFF;
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        z-index: 999;
+    }
+    .chat-controls {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        gap: 10px; 
+    }
+
+    .close-chat {
+        padding: 8px 15px;
+        background: #FF4444;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        min-width: 100px;
+        height: 40px;
+        font-size: 12px;
+        transition: background-color 0.3s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .close-chat:hover {
+        background: #FF6666;
+    }
+    
+    .modal input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    #getRateBtn {
+      background-color: #0000ff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      min-width: 100px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #rateResult {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .minimize-chat {
+        font-size: 24px;  
+        cursor: pointer;
+        padding: 0 10px;  
+        line-height: 24px; 
+        font-weight: bold;
+        user-select: none;
+    }
+
+    .minimize-chat:hover {
+        color: #ddd;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>CONVERSOR UNIVERSAL</h1>
+        <div class="form-group">
+            <label for="fromContinent">Continente de origen:</label>
+            <select id="fromContinent"></select>
+        </div>
+        <div class="form-group">
+            <label for="fromCountry">Pa&#xed;s de origen:</label>
+            <select id="fromCountry"></select>
+        </div>
+        <div class="form-group">
+            <label for="amount">Cantidad:</label>
+            <input type="number" id="amount" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+            <label for="toContinent">Continente de destino:</label>
+            <select id="toContinent"></select>
+        </div>
+        <div class="form-group">
+            <label for="toCountry">Pa&#xed;s de destino:</label>
+            <select id="toCountry"></select>
+        </div>
+        <div class="result-container">
+            <div id="result"></div>
+        </div>
+        <button id="convertBtn">Convertir</button>
+        <button id="infoBtn">Informate</button>
+        <button id="clearBtn">Limpiar</button>
+        <button id="exitBtn">Salir</button>
+    </div>
+
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&#xd7;</span>
+            <h2>Informaci&#xf3;n sobre CONVERSOR UNIVERSAL</h2>
+            <p>CONVERSOR UNIVERSAL es una aplicaci&#xf3;n web que permite convertir entre las monedas de todos los pa&#xed;ses del mundo utilizando tasas de cambio en tiempo real.</p>
+            <h3>C&#xf3;mo usar la aplicaci&#xf3;n:</h3>
+            <ol>
+                <li>Selecciona el continente y pa&#xed;s de origen.</li>
+                <li>Ingresa la cantidad que deseas convertir.</li>
+                <li>Selecciona el continente y pa&#xed;s de destino.</li>
+                <li>Haz clic en &quot;Convertir&quot; para ver el resultado.</li>
+            </ol>
+            <h3>Informaci&#xf3;n del creador:</h3>
+            <p>Nombre: Tarciano ENZEMA NCHAMA</p>
+            <p>Formaci&#xf3;n acad&#xe9;mica: Finalista universitario de la UNGE</p>
+            <p>Facultad: Ciencias econ&#xf3;micas gesti&#xf3;n y administraci&#xf3;n</p>
+            <p>Departamento: Inform&#xe1;tica de gesti&#xf3;n empresarial</p>
+            <p>Contacto: enzemajr@gmail.com</p>
+            <p>Fecha de creaci&#xf3;n: 27/09/2024</p>
+        </div>
+    </div>
+
+    <div id="rateInputModal" class="modal">
+        <div class="modal-content">
+            <h3>Consulta de Tasa de Cambio</h3>
+            <div class="form-group">
+                <label for="rateFromCountry">País de origen:</label>
+                <input type="text" id="rateFromCountry" list="countryList">
+            </div>
+            <div class="form-group">  
+                <label for="rateToCountry">País de destino:</label>
+                <input type="text" id="rateToCountry" list="countryList">
+            </div>
+            <button id="getRateBtn">Obtener Tasa</button>
+            <div id="rateResult"></div>
+
+            <datalist id="countryList">
+            </datalist>
+        </div>
+    </div>
+
+    <div class="chat-toggle">Chat con Asistente</div>
+    <div class="chat-container">
+        <div class="chat-header">
+            <span>Asistente Virtual</span>
+            <div class="chat-header-controls">
+                <span class="minimize-chat">&#x2212;</span>
+                <button class="close-chat">Cerrar Chat</button>
+            </div>
+        </div>
+        <div class="chat-messages"></div>
+        <div class="chat-controls">
+            <button class="clear-chat">Limpiar Chat</button>
+        </div>
+        <div class="chat-input-container">
+            <input type="text" class="chat-input" placeholder="Escribe tu pregunta...">
+            <button class="chat-send">&#x2191;</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const continents = {
+          "África": ["Angola", "Argelia", "Benín", "Botsuana", "Burkina Faso", "Burundi", "Cabo Verde", "Camerún", "Chad", "Comoras", "Congo", "Costa de Marfil", "Egipto", "Eritrea", "Etiopía", "Gabón", "Gambia", "Ghana", "Guinea", "Guinea Ecuatorial", "Guinea-Bisáu", "Kenia", "Lesoto", "Liberia", "Libia", "Madagascar", "Malaui", "Malí", "Marruecos", "Mauricio", "Mauritania", "Mozambique", "Namibia", "Níger", "Nigeria", "República Centroafricana", "República Democrática del Congo", "Ruanda", "Santo Tomé y Príncipe", "Senegal", "Seychelles", "Sierra Leona", "Somalia", "Suazilandia", "Sudáfrica", "Sudán", "Sudán del Sur", "Tanzania", "Togo", "Túnez", "Uganda", "Yibuti", "Zambia", "Zimbabue"],
+          "Europa": ["Albania", "Alemania", "Andorra", "Armenia", "Austria", "Azerbaiyán", "Bélgica", "Bielorrusia", "Bosnia y Herzegovina", "Bulgaria", "Chipre", "Ciudad del Vaticano", "Croacia", "Dinamarca", "Eslovaquia", "Eslovenia", "España", "Estonia", "Finlandia", "Francia", "Georgia", "Grecia", "Hungría", "Irlanda", "Islandia", "Italia", "Kazajistán", "Letonia", "Liechtenstein", "Lituania", "Luxemburgo", "Macedonia del Norte", "Malta", "Moldavia", "Mónaco", "Montenegro", "Noruega", "Países Bajos", "Polonia", "Portugal", "Reino Unido", "República Checa", "Rumania", "Rusia", "San Marino", "Serbia", "Suecia", "Suiza", "Turquía", "Ucrania"],
+          "América": ["Antigua y Barbuda", "Argentina", "Bahamas", "Barbados", "Belice", "Bolivia", "Brasil", "Canadá", "Chile", "Colombia", "Costa Rica", "Cuba", "Dominica", "Ecuador", "El Salvador", "Estados Unidos", "Granada", "Guatemala", "Guyana", "Haití", "Honduras", "Jamaica", "México", "Nicaragua", "Panamá", "Paraguay", "Perú", "República Dominicana", "San Cristóbal y Nieves", "San Vicente y las Granadinas", "Santa Lucía", "Surinam", "Trinidad y Tobago", "Uruguay", "Venezuela"],
+          "Asia": ["Afganistán", "Arabia Saudita", "Bangladés", "Baréin", "Birmania", "Brunéi", "Bután", "Camboya", "Catar", "China", "Corea del Norte", "Corea del Sur", "Emiratos Árabes Unidos", "Filipinas", "India", "Indonesia", "Irak", "Irán", "Israel", "Japón", "Jordania", "Kazajistán", "Kirguistán", "Kuwait", "Laos", "Líbano", "Malasia", "Maldivas", "Mongolia", "Nepal", "Omán", "Pakistán", "Palestina", "Singapur", "Siria", "Sri Lanka", "Tailandia", "Tayikistán", "Timor Oriental", "Turkmenistán", "Uzbekistán", "Vietnam", "Yemen"],
+          "Oceanía": ["Australia", "Fiyi", "Islas Marshall", "Islas Salomón", "Kiribati", "Micronesia", "Nauru", "Nueva Zelanda", "Palaos", "Papúa Nueva Guinea", "Samoa", "Tonga", "Tuvalu", "Vanuatu"]
+        };
+        const currencies = {
+          "Angola": "AOA",
+          "Argelia": "DZD",
+          "Benín": "XOF",
+          "Botsuana": "BWP",
+          "Burkina Faso": "XOF",
+          "Burundi": "BIF",
+          "Cabo Verde": "CVE",
+          "Camerún": "XAF",
+          "Chad": "XAF",
+          "Comoras": "KMF",
+          "Congo": "XAF",
+          "Costa de Marfil": "XOF",
+          "Egipto": "EGP",
+          "Eritrea": "ERN",
+          "Etiopía": "ETB",
+          "Gabón": "XAF",
+          "Gambia": "GMD",
+          "Ghana": "GHS",
+          "Guinea": "GNF",
+          "Guinea Ecuatorial": "XAF",
+          "Guinea-Bisáu": "XOF",
+          "Kenia": "KES",
+          "Lesoto": "LSL",
+          "Liberia": "LRD",
+          "Libia": "LYD",
+          "Madagascar": "MGA",
+          "Malaui": "MWK",
+          "Malí": "XOF",
+          "Marruecos": "MAD",
+          "Mauricio": "MUR",
+          "Mauritania": "MRU",
+          "Mozambique": "MZN",
+          "Namibia": "NAD",
+          "Níger": "XOF",
+          "Nigeria": "NGN",
+          "República Centroafricana": "XAF",
+          "República Democrática del Congo": "CDF",
+          "Ruanda": "RWF",
+          "Santo Tomé y Príncipe": "STN",
+          "Senegal": "XOF",
+          "Seychelles": "SCR",
+          "Sierra Leona": "SLL",
+          "Somalia": "SOS",
+          "Suazilandia": "SZL",
+          "Sudáfrica": "ZAR",
+          "Sudán": "SDG",
+          "Sudán del Sur": "SSP",
+          "Tanzania": "TZS",
+          "Togo": "XOF",
+          "Túnez": "TND",
+          "Uganda": "UGX",
+          "Yibuti": "DJF",
+          "Zambia": "ZMW",
+          "Zimbabue": "ZWL",
+          "Albania": "ALL",
+          "Alemania": "EUR",
+          "Andorra": "EUR",
+          "Armenia": "AMD",
+          "Austria": "EUR",
+          "Azerbaiyán": "AZN",
+          "Bélgica": "EUR",
+          "Bielorrusia": "BYN",
+          "Bosnia y Herzegovina": "BAM",
+          "Bulgaria": "BGN",
+          "Chipre": "EUR",
+          "Ciudad del Vaticano": "EUR",
+          "Croacia": "HRK",
+          "Dinamarca": "DKK",
+          "Eslovaquia": "EUR",
+          "Eslovenia": "EUR",
+          "España": "EUR",
+          "Estonia": "EUR",
+          "Finlandia": "EUR",
+          "Francia": "EUR",
+          "Georgia": "GEL",
+          "Grecia": "EUR",
+          "Hungría": "HUF",
+          "Irlanda": "EUR",
+          "Islandia": "ISK",
+          "Italia": "EUR",
+          "Kazajistán": "KZT",
+          "Letonia": "EUR",
+          "Liechtenstein": "CHF",
+          "Lituania": "EUR",
+          "Luxemburgo": "EUR",
+          "Macedonia del Norte": "MKD",
+          "Malta": "EUR",
+          "Moldavia": "MDL",
+          "Mónaco": "EUR",
+          "Montenegro": "EUR",
+          "Noruega": "NOK",
+          "Países Bajos": "EUR",
+          "Polonia": "PLN",
+          "Portugal": "EUR",
+          "Reino Unido": "GBP",
+          "República Checa": "CZK",
+          "Rumania": "RON",
+          "Rusia": "RUB",
+          "San Marino": "EUR",
+          "Serbia": "RSD",
+          "Suecia": "SEK",
+          "Suiza": "CHF",
+          "Turquía": "TRY",
+          "Ucrania": "UAH",
+          "Antigua y Barbuda": "XCD",
+          "Argentina": "ARS",
+          "Bahamas": "BSD",
+          "Barbados": "BBD",
+          "Belice": "BZD",
+          "Bolivia": "BOB",
+          "Brasil": "BRL",
+          "Canadá": "CAD",
+          "Chile": "CLP",
+          "Colombia": "COP",
+          "Costa Rica": "CRC",
+          "Cuba": "CUP",
+          "Dominica": "XCD",
+          "Ecuador": "USD",
+          "El Salvador": "USD",
+          "Estados Unidos": "USD",
+          "Granada": "XCD",
+          "Guatemala": "GTQ",
+          "Guyana": "GYD",
+          "Haití": "HTG",
+          "Honduras": "HNL",
+          "Jamaica": "JMD",
+          "México": "MXN",
+          "Nicaragua": "NIO",
+          "Panamá": "PAB",
+          "Paraguay": "PYG",
+          "Perú": "PEN",
+          "República Dominicana": "DOP",
+          "San Cristóbal y Nieves": "XCD",
+          "San Vicente y las Granadinas": "XCD",
+          "Santa Lucía": "XCD",
+          "Surinam": "SRD",
+          "Trinidad y Tobago": "TTD",
+          "Uruguay": "UYU",
+          "Venezuela": "VES",
+          "Afganistán": "AFN",
+          "Arabia Saudita": "SAR",
+          "Bangladés": "BDT",
+          "Baréin": "BHD",
+          "Birmania": "MMK",
+          "Brunéi": "BND",
+          "Bután": "BTN",
+          "Camboya": "KHR",
+          "Catar": "QAR",
+          "China": "CNY",
+          "Corea del Norte": "KPW",
+          "Corea del Sur": "KRW",
+          "Emiratos Árabes Unidos": "AED",
+          "Filipinas": "PHP",
+          "India": "INR",
+          "Indonesia": "IDR",
+          "Irak": "IQD",
+          "Irán": "IRR",
+          "Israel": "ILS",
+          "Japón": "JPY",
+          "Jordania": "JOD",
+          "Kuwait": "KWD",
+          "Laos": "LAK",
+          "Líbano": "LBP",
+          "Malasia": "MYR",
+          "Maldivas": "MVR",
+          "Mongolia": "MNT",
+          "Nepal": "NPR",
+          "Omán": "OMR",
+          "Pakistán": "PKR",
+          "Palestina": "ILS",
+          "Singapur": "SGD",
+          "Siria": "SYP",
+          "Sri Lanka": "LKR",
+          "Tailandia": "THB",
+          "Tayikistán": "TJS",
+          "Timor Oriental": "USD",
+          "Turkmenistán": "TMT",
+          "Uzbekistán": "UZS",
+          "Vietnam": "VND",
+          "Yemen": "YER",
+          "Australia": "AUD",
+          "Fiyi": "FJD",
+          "Islas Marshall": "USD",
+          "Islas Salomón": "SBD",
+          "Kiribati": "AUD",
+          "Micronesia": "USD",
+          "Nauru": "AUD",
+          "Nueva Zelanda": "NZD",
+          "Palaos": "USD",
+          "Papúa Nueva Guinea": "PGK",
+          "Samoa": "WST",
+          "Tonga": "TOP",
+          "Tuvalu": "AUD",
+          "Vanuatu": "VUV"
+        };
+
+        async function fetchWorldBankRates() {
+          try {
+            const response = await axios.get('https://api.exchangerate-api.com/v4/latest/USD');
+            window.exchangeRates = response.data.rates;
+            localStorage.setItem('lastRatesUpdate', Date.now());
+            localStorage.setItem('exchangeRates', JSON.stringify(window.exchangeRates));
+            return window.exchangeRates;
+          } catch (error) {
+            console.error('Error fetching rates:', error);
+            // Fallback to cached rates if available
+            const cachedRates = localStorage.getItem('exchangeRates');
+            if (cachedRates) {
+              window.exchangeRates = JSON.parse(cachedRates);
+              return window.exchangeRates;
+            }
+            throw error;
+          }
+        }
+
+        async function updateExchangeRates() {
+          const lastUpdate = localStorage.getItem('lastRatesUpdate');
+          const currentTime = Date.now();
+          const oneDayMs = 24 * 60 * 60 * 1000;
+
+          if (!lastUpdate || (currentTime - parseInt(lastUpdate)) > oneDayMs) {
+            return await fetchWorldBankRates();
+          } else {
+            const cachedRates = localStorage.getItem('exchangeRates');
+            if (cachedRates) {
+              window.exchangeRates = JSON.parse(cachedRates);
+              return window.exchangeRates;
+            } else {
+              return await fetchWorldBankRates();
+            }
+          }
+        }
+
+        function populateSelect(selectId, options) {
+          const select = document.getElementById(selectId);
+          select.innerHTML = ''; // Clear existing options first
+          
+          const defaultOpt = document.createElement('option');
+          defaultOpt.value = "";
+          defaultOpt.text = "Seleccionar";
+          defaultOpt.selected = true;  
+          defaultOpt.disabled = true;
+          select.appendChild(defaultOpt);
+          
+          options.forEach(option => {
+            const opt = document.createElement('option');
+            opt.value = option;
+            opt.text = option;
+            select.appendChild(opt);
+          });
+        }
+        function updateCountries(continentSelectId, countrySelectId) {
+          const continentSelect = document.getElementById(continentSelectId);
+          const countrySelect = document.getElementById(countrySelectId);
+          countrySelect.innerHTML = '';
+          
+          const defaultOpt = document.createElement('option');
+          defaultOpt.value = "";
+          defaultOpt.text = "Seleccionar";
+          defaultOpt.selected = true;
+          defaultOpt.disabled = true;
+          countrySelect.appendChild(defaultOpt);
+          
+          const selectedContinent = continentSelect.value;
+          const countries = continents[selectedContinent];
+          if (countries) {
+            countries.forEach(country => {
+              const opt = document.createElement('option');
+              opt.value = country;
+              opt.text = country;
+              countrySelect.appendChild(opt);
+            });
+          }
+        }
+        document.addEventListener('DOMContentLoaded', async () => {
+          // Initialize continents once
+          populateSelect('fromContinent', Object.keys(continents));
+          populateSelect('toContinent', Object.keys(continents));
+          
+          // Add change listeners for continent selects
+          document.getElementById('fromContinent').addEventListener('change', () => {
+            updateCountries('fromContinent', 'fromCountry');
+          });
+          document.getElementById('toContinent').addEventListener('change', () => {
+            updateCountries('toContinent', 'toCountry');
+          });
+
+          // Initialize default country lists
+          updateCountries('fromContinent', 'fromCountry');
+          updateCountries('toContinent', 'toCountry');
+          
+          // Initialize chat
+          const chatMessages = document.querySelector('.chat-messages');
+          if (chatMessages.children.length === 0) {
+            addWelcomeMessage();
+          }
+          
+          // Initialize exchange rates
+          await updateExchangeRates();
+          
+          // Schedule next update
+          scheduleNextUpdate();
+        });
+        async function scheduleNextUpdate() {
+          const now = new Date();
+          const tomorrow = new Date(now);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          tomorrow.setHours(0, 0, 0, 0);
+          
+          const timeUntilNextUpdate = tomorrow - now;
+          
+          setTimeout(async () => {
+            await updateExchangeRates();
+            scheduleNextUpdate();
+          }, timeUntilNextUpdate);
+        }
+        document.getElementById('convertBtn').addEventListener('click', async () => {
+          const fromCountry = document.getElementById('fromCountry').value;
+          const toCountry = document.getElementById('toCountry').value;
+          const amount = parseFloat(document.getElementById('amount').value);
+
+          if (!fromCountry || !toCountry || isNaN(amount)) {
+            document.getElementById('result').textContent = 'Por favor seleccione los países y complete la cantidad correctamente';
+            return;
+          }
+          
+          try {
+            const rates = await updateExchangeRates();
+            
+            const fromCurrency = currencies[fromCountry];
+            const toCurrency = currencies[toCountry];
+            
+            if (!rates[fromCurrency] || !rates[toCurrency]) {
+              throw new Error('Currency rates not available');
+            }
+            
+            const rate = rates[toCurrency] / rates[fromCurrency];
+            const result = amount * rate;
+            
+            document.getElementById('result').textContent = 
+              `${amount.toFixed(2)} ${fromCurrency} = ${result.toFixed(2)} ${toCurrency}`;
+          } catch (error) {
+            console.error('Conversion error:', error);
+            document.getElementById('result').textContent = 
+              'Error en la conversión. Por favor intente nuevamente.';
+          }
+        });
+        document.getElementById('clearBtn').addEventListener('click', () => {
+          // Clear all form inputs
+          document.getElementById('amount').value = '';
+          document.getElementById('result').textContent = '';
+          
+          // Reset continent selectors
+          document.getElementById('fromContinent').selectedIndex = 0;
+          document.getElementById('toContinent').selectedIndex = 0;
+          
+          // Reset country selectors
+          document.getElementById('fromCountry').innerHTML = '';
+          document.getElementById('toCountry').innerHTML = '';
+          
+          // Reinitialize country lists with default options
+          updateCountries('fromContinent', 'fromCountry');
+          updateCountries('toContinent', 'toCountry');
+        });
+        document.getElementById('exitBtn').addEventListener('click', () => {
+          if (confirm('¿Estás seguro que deseas salir?')) {
+            window.close();
+          }
+        });
+        const modal = document.getElementById('infoModal');
+        const infoBtn = document.getElementById('infoBtn');
+        const span = document.getElementsByClassName('close')[0];
+        infoBtn.onclick = function () {
+          modal.style.display = "block";
+        };
+        span.onclick = function () {
+          modal.style.display = "none";
+        };
+        window.onclick = function (event) {
+          if (event.target == modal || event.target == document.getElementById('rateInputModal')) {
+            modal.style.display = "none";
+            document.getElementById('rateInputModal').style.display = "none";
+          }
+        };
+        function clearChatMessages() {
+          const chatMessages = document.querySelector('.chat-messages');
+          chatMessages.innerHTML = '';
+          addWelcomeMessage();
+        }
+        const chatResponses = {
+          keywords: {
+            'convertir': 'Para convertir monedas, selecciona los países y la cantidad, luego presiona el botón "Convertir".',
+            'moneda': 'La aplicación convierte entre todas las monedas del mundo usando tasas de cambio en tiempo real.',
+            'actualización': 'Las tasas de cambio se actualizan automáticamente cada 10 minutos.',
+            'países': 'La aplicación incluye todos los países del mundo organizados por continentes.',
+            'creador': 'La aplicación fue creada por Tarciano ENZEMA NCHAMA, estudiante de la UNGE en la Facultad de Ciencias económicas gestión y administración.',
+            'help': `Puedo ayudarte con:
+- Ver países por continente (escribe "continentes") 
+- Ver tasa de cambio específica (escribe "tasa")
+- Información sobre conversión (escribe "convertir")
+- Información sobre el creador (escribe "creador")
+- Instrucciones de uso (escribe "uso")
+- Información general (escribe "ayuda")
+- Limpiar pantalla (escribe "limpiar")`,
+            'uso': `Para usar el conversor:
+1. Selecciona el continente y país de origen
+2. Ingresa la cantidad a convertir
+3. Selecciona el continente y país destino 
+4. Presiona "Convertir" para ver el resultado`,
+            'limpiar': function () {
+              clearChatMessages();
+              return 'Pantalla limpiada.';
+            },
+            'tasa': function() {
+              return `¡Hola! Me alegro que quieras consultar las tasas de cambio 
+
+Para hacer una conversión de manera rápida y sencilla, te sugiero que:
+
+1. Selecciona el continente y país de origen en la parte superior de la aplicación
+2. Ingresa la cantidad que deseas convertir
+3. Luego selecciona el continente y país de destino
+4. Finalmente, haz clic en el botón "Convertir"
+
+¡Y listo! Verás el resultado de tu conversión al instante.
+
+¿Necesitas ayuda con algo más? Estoy aquí para asistirte. 
+
+También puedes escribir "ayuda" para ver todas las opciones disponibles.`;
+            },
+            'continentes': function () {
+              let response = 'Países por continente:\n';
+              for (let continent in continents) {
+                response += `\n${continent}:\n${continents[continent].join(', ')}\n`;
+              }
+              return response;
+            }
+          },
+          async getResponse(message) {
+            message = message.toLowerCase();
+            if (message === 'limpiar') {
+              return this.keywords['limpiar']();
+            }
+            if (message === 'tasa') {
+              return this.keywords['tasa']();
+            }
+            if (message === 'continentes') {
+              return this.keywords['continentes']();
+            }
+            if (message === 'ayuda' || message === 'help') {
+              return this.keywords['help'];
+            }
+            if (message === 'uso') {
+              return this.keywords['uso'];
+            }
+            for (let key in this.keywords) {
+              if (message.includes(key) && typeof this.keywords[key] === 'string') {
+                return this.keywords[key];
+              }
+            }
+            return `No entiendo tu pregunta. Prueba con:
+- "ayuda" para ver todas las opciones
+- "continentes" para ver lista de países
+- "tasa" para ver tasas de cambio
+- "uso" para instrucciones detalladas
+- "convertir" para información básica
+- "creador" para información del desarrollador`;
+          }
+        };
+        function populateCountryList() {
+          const datalist = document.getElementById('countryList');
+          Object.keys(currencies).forEach(country => {
+            const option = document.createElement('option');
+            option.value = country;
+            datalist.appendChild(option);
+          });
+        }
+        function addWelcomeMessage() {
+          addMessage(`¡Bienvenido al Conversor Universal! 
+
+Soy tu asistente virtual y estoy aquí para ayudarte con:
+- Conversiones entre cualquier moneda del mundo
+- Consultas de tasas de cambio actuales
+- Información sobre países y monedas
+- Instrucciones de uso detalladas
+
+Puedes usar los siguientes comandos:
+- Escribe "ayuda" para ver todas las opciones disponibles
+- Escribe "uso" para ver instrucciones paso a paso
+- Escribe "tasa" para consultar tasas de cambio específicas
+- Escribe "continentes" para ver lista de países
+- Escribe "limpiar" para borrar la pantalla del chat
+
+¿En qué puedo ayudarte hoy?`);
+        }
+        const chatToggle = document.querySelector('.chat-toggle');
+        const chatContainer = document.querySelector('.chat-container');
+        const chatMessages = document.querySelector('.chat-messages');
+        const chatInput = document.querySelector('.chat-input');
+        const chatSend = document.querySelector('.chat-send');
+        const minimizeChat = document.querySelector('.minimize-chat');
+        chatToggle.addEventListener('click', () => {
+          const chatMessages = document.querySelector('.chat-messages');
+          if (chatMessages.children.length === 0) {
+            addWelcomeMessage();
+          }
+          chatContainer.style.display = 'block';
+          chatToggle.style.display = 'none';
+        });
+        minimizeChat.addEventListener('click', () => {
+          chatContainer.style.display = 'none';
+          chatToggle.style.display = 'block';
+        });
+        function addMessage(message, isUser = false) {
+          const messageDiv = document.createElement('div');
+          messageDiv.classList.add('message');
+          messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+          messageDiv.textContent = message;
+          chatMessages.appendChild(messageDiv);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+          if (!isUser && message.includes('\n')) {
+            messageDiv.style.whiteSpace = 'pre-wrap';
+          }
+        }
+        async function handleUserMessage() {
+          const message = chatInput.value.trim();
+          if (message) {
+            addMessage(message, true);
+            const response = await chatResponses.getResponse(message);
+            setTimeout(() => addMessage(response), 500);
+            chatInput.value = '';
+          }
+        }
+        chatSend.addEventListener('click', handleUserMessage);
+        chatInput.addEventListener('keypress', e => {
+          if (e.key === 'Enter') {
+            handleUserMessage();
+          }
+        });
+        const clearChatButton = document.querySelector('.clear-chat');
+        clearChatButton.addEventListener('click', () => {
+          clearChatMessages();
+          addMessage('Chat limpiado. ¿En qué más puedo ayudarte?');
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+          const chatMessages = document.querySelector('.chat-messages');
+          if (chatMessages.children.length === 0) {
+            addWelcomeMessage();
+          }
+          populateCountryList();
+        });
+        const closeChat = document.querySelector('.close-chat');
+        closeChat.addEventListener('click', () => {
+          const chatContainer = document.querySelector('.chat-container');
+          const chatToggle = document.querySelector('.chat-toggle');
+          
+          chatContainer.style.display = 'none';
+          chatToggle.style.display = 'block';
+          
+          clearChatMessages();
+          addMessage('¡Hasta luego! Si necesitas ayuda nuevamente, no dudes en volver a abrir el chat.');
+        });
+    </script>
+</body>
+</html>
